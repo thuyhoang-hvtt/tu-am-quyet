@@ -7,16 +7,16 @@ import type { Store } from '../reducers/types';
 import Routes from '../Routes';
 
 type Props = {
-  store: Store,
-  history: {}
+	store: Store,
+	history: {}
 };
 
 const Root = ({ store, history }: Props) => (
-  <Provider store={store}>
-    <ConnectedRouter history={history}>
-      <Routes />
-    </ConnectedRouter>
-  </Provider>
+	<Provider store={store}>
+		<ConnectedRouter history={history}>
+			<Routes />
+		</ConnectedRouter>
+	</Provider>
 );
 
 export default hot(Root);

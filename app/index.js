@@ -10,8 +10,8 @@ const store = configureStore();
 const AppContainer = process.env.PLAIN_HMR ? Fragment : ReactHotAppContainer;
 
 render(
-  <AppContainer>
-    <Root store={store} history={history} />
-  </AppContainer>,
-  document.getElementById('root')
+	<AppContainer>
+		<Root store={store} history={history} />
+	</AppContainer>,
+	document.getElementById('root')
 );
