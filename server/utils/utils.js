@@ -8,10 +8,10 @@ const cheerio = require('cheerio');
  * to an overall function and returns the overall function
  */
 const compose = (...fns) => arg => {
-    return _.flattenDeep(fns).reduceRight((current, fn) => {
-        if (_.isFunction(fn)) return fn(current);
-        throw new TypeError('compose() expects only functions as parameters.');
-    }, arg);
+	return _.flattenDeep(fns).reduceRight((current, fn) => {
+		if (_.isFunction(fn)) return fn(current);
+		throw new TypeError('compose() expects only functions as parameters.');
+	}, arg);
 };
 
 /**
@@ -19,10 +19,10 @@ const compose = (...fns) => arg => {
  * to an overall async function and returns the overall async function
  */
 const composeAsync = (...fns) => arg => {
-    return _.flattenDeep(fns).reduceRight(async (current, fn) => {
-        if (_.isFunction(fn)) return fn(await current);
-        throw new TypeError('compose() expects only functions as parameters.');
-    }, arg);
+	return _.flattenDeep(fns).reduceRight(async (current, fn) => {
+		if (_.isFunction(fn)) return fn(await current);
+		throw new TypeError('compose() expects only functions as parameters.');
+	}, arg);
 };
 
 /**
@@ -30,15 +30,15 @@ const composeAsync = (...fns) => arg => {
  _* and sends a JSON response to the HTTP response stream(res).
  */
 const sendResponse = res => async request => {
-    return request
-        .then(data => res.json({ status: 'success', data }))
-        .catch(({ status: code = 500 }) =>
-            res.status(code).json({
-                status: 'failure',
-                code,
-                message: code === 404 ? 'Not found.' : 'Request failed.'
-            })
-        );
+	return request
+		.then(data => res.json({ status: 'success', data }))
+		.catch(({ status: code = 500 }) =>
+			res.status(code).json({
+				status: 'failure',
+				code,
+				message: code === 404 ? 'Not found.' : 'Request failed.'
+			})
+		);
 };
 
 /**
@@ -47,14 +47,14 @@ const sendResponse = res => async request => {
 */
 
 const fetchHtmlFromUrl = async url => {
-    return axios
-        .get(enforceHttpsUrl(url))
-        .then(response => cheerio.load(response.data))
-        .catch(error => {
-            // eslint-disable-next-line no-param-reassign
-            error.status = (error.response && error.response.status) || 500;
-            throw error;
-        });
+	return axios
+		.get(enforceHttpsUrl(url))
+		.then(response => cheerio.load(response.data))
+		.catch(error => {
+			// eslint-disable-next-line no-param-reassign
+			error.status = (error.response && error.response.status) || 500;
+			throw error;
+		});
 };
 
 /**
@@ -62,21 +62,21 @@ const fetchHtmlFromUrl = async url => {
  * and returns the new URL
  */
 const enforceHttpsUrl = url =>
-    _.isString(url) ? url.replace(/^(https?:)?\/\//, 'https://') : null;
+	_.isString(url) ? url.replace(/^(https?:)?\/\//, 'https://') : null;
 
 /**
  * Filters null values from array
  * and returns an array without nulls
  */
 const withoutNulls = arr =>
-    _.isArray(arr) ? arr.filter(val => !_.isNull(val)) : [];
+	_.isArray(arr) ? arr.filter(val => !_.isNull(val)) : [];
 
 /**
  * Transforms an array of ({ key: value }) pairs to an object
  * and returns the transformed object
  */
 const arrayPairsToObject = arr =>
-    arr.reduce((obj, pair) => ({ ...obj, ...pair }), {});
+	arr.reduce((obj, pair) => ({ ...obj, ...pair }), {});
 
 /**
  * Fetches the inner text of the element
@@ -89,7 +89,7 @@ const fetchElemInnerText = elem => (elem.text && elem.text().trim()) || null;
  * and returns the attribute value
  */
 const fetchElemAttribute = attribute => elem =>
-    (elem.attr && elem.attr(attribute)) || null;
+	(elem.attr && elem.attr(attribute)) || null;
 
 /**
  * Extract an array of values from a collection of elements
@@ -97,8 +97,8 @@ const fetchElemAttribute = attribute => elem =>
  * or the return value from calling transform() on array
  */
 const extractFromElems = extractor => transform => elems => $ => {
-    const results = elems.map((i, element) => extractor($(element))).get();
-    return _.isFunction(transform) ? transform(results) : results;
+	const results = elems.map((i, element) => extractor($(element))).get();
+	return _.isFunction(transform) ? transform(results) : results;
 };
 
 /**
@@ -106,16 +106,16 @@ const extractFromElems = extractor => transform => elems => $ => {
  * and returns the url with https scheme
  */
 const extractUrlAttribute = attr =>
-    compose(enforceHttpsUrl, fetchElemAttribute(attr));
+	compose(enforceHttpsUrl, fetchElemAttribute(attr));
 
 module.exports = {
-    enforceHttpsUrl,
-    sendResponse,
-    fetchHtmlFromUrl,
-    withoutNulls,
-    arrayPairsToObject,
-    compose,
-    composeAsync,
-    fetchElemInnerText,
-    fetchElemAttribute
+	enforceHttpsUrl,
+	sendResponse,
+	fetchHtmlFromUrl,
+	withoutNulls,
+	arrayPairsToObject,
+	compose,
+	composeAsync,
+	fetchElemInnerText,
+	fetchElemAttribute
 };

@@ -4,12 +4,17 @@ import {
 	TextField,
 	makeStyles,
 	Grid,
-	IconButton
+	IconButton,
+	CircularProgress
 } from '@material-ui/core';
 import { SendOutlined } from '@material-ui/icons';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { hrefOnChange } from '../actions/home';
+import { openPlayer, addInfo, addContent } from '../actions/player';
+import API from '../api/API';
+import { ajaxLoading, generateError } from '../actions/ajax';
+import useNavigate from '../api/useNavigate';
 
 const useStyles = makeStyles(() => ({
 	icon: {
@@ -38,6 +43,9 @@ const useStyles = makeStyles(() => ({
 		'& .Mui-disabled': {
 			color: '#BEC9C7'
 		}
+	},
+	circle: {
+		color: '#00997C'
 	}
 }));
 
@@ -58,7 +66,26 @@ const Bar = withStyles({
 function NavigateBar() {
 	const classes = useStyles();
 	const { href } = useSelector(state => state.home);
+	const { error, loading } = useSelector(state => state.ajax);
 	const dispatch = useDispatch();
+
+	const useRequest = async url => {
+		let response;
+
+		try {
+			response = await API.get(url);
+		} catch (e) {
+			dispatch(generateError(e.message));
+		}
+		return response;
+	};
+
+	const handleNavigate = async event => {
+		event.preventDefault();
+		dispatch(ajaxLoading(true));
+		(await useNavigate(href, false)).map(action => dispatch(action));
+		dispatch(ajaxLoading(false));
+	};
 
 	return (
 		<Grid container justify="center" alignItems="center">
@@ -69,12 +96,22 @@ function NavigateBar() {
 					placeholder="pham-nhan-tu-tien"
 					onChange={e => dispatch(hrefOnChange(e.target.value))}
 					value={href}
+					disabled={loading}
+					onKeyPress={e => e.key === 'Enter' && handleNavigate(e)}
 				/>
 			</GridItem>
 			<GridItem item xs={1}>
-				<IconButton className={classes.iconButton} disabled={href === ''}>
-					<SendOutlined className={classes.icon} />
-				</IconButton>
+				{loading ? (
+					<CircularProgress className={classes.circle} />
+				) : (
+					<IconButton
+						className={classes.iconButton}
+						disabled={href === ''}
+						onClick={handleNavigate}
+					>
+						<SendOutlined className={classes.icon} />
+					</IconButton>
+				)}
 			</GridItem>
 		</Grid>
 	);

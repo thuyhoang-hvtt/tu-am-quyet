@@ -9,7 +9,6 @@ body {
   height: 100vh;
   font-family: Arial, Helvetica, Helvetica Neue, serif;
   overflow-y: hidden;
-  
   margin: 0px;
 }
 
@@ -39,4 +38,29 @@ a:hover {
   opacity: 1;
   text-decoration: none;
   cursor: pointer;
+}
+
+/* 
+background: linear-gradient(136deg, #ce050f, #0089af, #00997c, #a76bcf);
+background-size: 800% 800%;
+
+-webkit-animation: AnimationName 30s easeIn infinite;
+-moz-animation: AnimationName 30s easeIn infinite;
+animation: AnimationName 30s easeIn infinite; 
+*/
+
+@-webkit-keyframes GradientAnimation {
+    0%{background-position:10% 0%}
+    50%{background-position:91% 100%}
+    100%{background-position:10% 0%}
+}
+@-moz-keyframes GradientAnimation {
+    0%{background-position:10% 0%}
+    50%{background-position:91% 100%}
+    100%{background-position:10% 0%}
+}
+@keyframes GradientAnimation {
+    0%{background-position:10% 0%}
+    50%{background-position:91% 100%}
+    100%{background-position:10% 0%}
 }

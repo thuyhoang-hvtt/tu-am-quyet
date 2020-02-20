@@ -7,16 +7,18 @@ const initialState = {
 
 function home(state = initialState, action) {
 	switch (action.type) {
-		case HomeActions.hoveredOnChanged:
+		case HomeActions.HOVERED_ON_CHANGED:
 			return {
 				...state,
 				hovered: action.hovered
 			};
-		case HomeActions.hrefOnChanged:
+		case HomeActions.HREF_ON_CHANGED:
 			return {
 				...state,
 				href: action.href
 			};
+		case HomeActions.RESET:
+			return initialState;
 		default:
 			return state;
 	}

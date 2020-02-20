@@ -1,15 +1,17 @@
 // @flow
-import * as React from 'react';
+import React, { useEffect } from 'react';
+import Routes from '../Routes';
+import ErrorDrawer from '../components/Errors';
+import Player from '../components/Player';
+import PlayerCore from '../components/PlayerCore';
 
-type Props = {
-	children: React.Node
-};
-
-export default class App extends React.Component<Props> {
-	props: Props;
-
-	render() {
-		const { children } = this.props;
-		return <>{children}</>;
-	}
+export default function App() {
+	return (
+		<>
+			<PlayerCore />
+			<Player />
+			<ErrorDrawer />
+			<Routes />
+		</>
+	);
 }

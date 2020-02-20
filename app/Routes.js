@@ -1,15 +1,17 @@
 import React from 'react';
-import { Switch, Route } from 'react-router';
+import { Switch, Route, useLocation } from 'react-router';
+import { AnimatePresence } from 'framer-motion';
 import routes from './constants/routes.json';
-import App from './containers/App';
-import HomePage from './containers/HomePage';
-import CounterPage from './containers/CounterPage';
+import { MenuPage, HomePage } from './containers';
 
-export default () => (
-	<App>
-		<Switch>
-			<Route path={routes.COUNTER} component={CounterPage} />
-			<Route path={routes.HOME} component={HomePage} />
-		</Switch>
-	</App>
-);
+export default function Routes() {
+	const location = useLocation();
+	return (
+		<AnimatePresence>
+			<Switch location={location} key={location.pathname}>
+				<Route path={routes.MENU} component={MenuPage} />
+				<Route path={routes.HOME} component={HomePage} />
+			</Switch>
+		</AnimatePresence>
+	);
+}
