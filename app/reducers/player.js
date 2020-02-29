@@ -25,9 +25,7 @@ export default function player(state = initialState, action) {
 		case PlayerActions.ADD_CONTENT:
 			return {
 				...state,
-				content: action.content,
-				isPausing: false,
-				isPlaying: false
+				content: action.content
 			};
 		case PlayerActions.ADD_INFO:
 			return {

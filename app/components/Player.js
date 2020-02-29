@@ -2,13 +2,15 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import clsx from 'clsx';
 import {
 	Drawer,
 	Grid,
 	Avatar,
 	makeStyles,
 	Typography,
-	Icon
+	Icon,
+	Slide
 } from '@material-ui/core';
 import {
 	SkipPreviousRounded,
@@ -18,10 +20,17 @@ import {
 	PauseCircleOutlineRounded,
 	MenuRounded,
 	ArrowDropUpRounded,
-	ArrowDropDownRounded
+	ArrowDropDownRounded,
+	ExpandMoreRounded,
+	ExpandLessRounded
 } from '@material-ui/icons';
 
-import { closePlayer, PlayerActions, addContent } from '../actions/player';
+import {
+	closePlayer,
+	PlayerActions,
+	addContent,
+	openPlayer
+} from '../actions/player';
 import Animated from './Animated';
 import { ajaxLoading } from '../actions/ajax';
 import useNavigate from '../api/useNavigate';
@@ -46,31 +55,28 @@ const useStyles = makeStyles(theme => ({
 			transform: 'translateX(-100%)'
 		}
 	},
-	playerSmall: {
+	player: {
 		'& .MuiBackdrop-root': {
 			background: 'transparent'
 		},
 		'& .MuiDrawer-paper': {
 			boxShadow: '0px 0px 40px 0px rgba(0, 0, 0, 0.5)',
-			borderRadius: '180px 180px 0 0',
 			background: 'linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab)',
 			backgroundSize: '400% 400%',
 			animation: '$GradientAnimation 30s ease infinite'
+		}
+	},
+	small: {
+		'& .MuiDrawer-paper': {
+			borderRadius: '180px 180px 0 0'
 		},
 		'& .MuiDrawer-paperAnchorBottom': {
 			height: 180
 		}
 	},
-	playerLarge: {
-		'& .MuiBackdrop-root': {
-			background: 'transparent'
-		},
+	large: {
 		'& .MuiDrawer-paper': {
-			boxShadow: '0px 0px 40px 0px rgba(0, 0, 0, 0.5)',
-			borderRadius: '360px 50px 0 0',
-			background: 'linear-gradient(120deg, #ee7752, #e73c7e, #23a6d5, #23d5ab)',
-			backgroundSize: '400% 400%',
-			animation: `$GradientAnimation 30s ease infinite`
+			borderRadius: '360px 50px 0 0'
 		},
 		'& .MuiDrawer-paperAnchorBottom': {
 			height: 540
@@ -80,8 +86,7 @@ const useStyles = makeStyles(theme => ({
 		minHeight: 60
 	},
 	detailInfo: {
-		marginTop: 60,
-		height: 360,
+		height: 420,
 		overflow: 'hidden'
 	},
 	posterFrame: {
@@ -113,6 +118,9 @@ const useStyles = makeStyles(theme => ({
 	},
 	playerWraper: {
 		height: 120
+	},
+	exitExpand: {
+		minHeight: 60
 	}
 }));
 
@@ -134,6 +142,12 @@ function Player() {
 		dispatch(closePlayer());
 	};
 
+	const handleExpand = (event, expand) => {
+		event.preventDefault();
+
+		dispatch(openPlayer(expand));
+	};
+
 	const handlePlay = () =>
 		isPlaying
 			? isPausing
@@ -142,7 +156,7 @@ function Player() {
 			: dispatch({ type: PlayerActions.PLAY });
 
 	const handleNavigate = async (event, url) => {
-		event.preventDefault();
+		if (event) event.preventDefault();
 		dispatch(ajaxLoading(true));
 		if (url) (await useNavigate(url)).map(action => dispatch(action));
 		dispatch(ajaxLoading(false));
@@ -151,7 +165,8 @@ function Player() {
 	useEffect(() => {
 		if (isPlaying)
 			window.responsiveVoice.speak(cleanedContent, 'Vietnamese Male', {
-				rate: 1.3
+				rate: 1.33,
+				onend: event => handleNavigate(event, next)
 			});
 
 		return () => {
@@ -166,21 +181,68 @@ function Player() {
 
 	return (
 		<Drawer
-			className={isExpanded ? classes.playerLarge : classes.playerSmall}
+			className={clsx(
+				classes.player,
+				isExpanded ? classes.large : classes.small
+			)}
 			anchor="bottom"
 			open={isOpened}
 			onClose={handleClose}
 		>
 			{isExpanded ? (
 				<Grid className={classes.detailInfo} container justify="space-around">
+					<GridRow item xs={9} />
+					<GridRow className={classes.exitExpand} item xs={3}>
+						<Animated size={48}>
+							<Icon
+								fontSize="inherit"
+								onMouseUp={e => handleExpand(e, false)}
+								component={ExpandMoreRounded}
+							/>
+						</Animated>
+					</GridRow>
 					<GridCol item xs={7}>
-						<Avatar className={classes.posterFrame} src={thumbPoster} />
+						<Slide
+							direction="right"
+							in={isExpanded}
+							mountOnEnter
+							unmountOnExit
+							timeout={1000}
+						>
+							<Avatar className={classes.posterFrame} src={thumbPoster} />
+						</Slide>
 					</GridCol>
 					<GridCol item xs={5} align="left">
-						<Text>{`Tác giả: ${author}`}</Text>
-						<Text>{`Thể loại: ${category}`}</Text>
-						<Text>{`Tình trạng: ${status}`}</Text>
-						<Text>{`Mới nhất: ${latest}`}</Text>
+						<Slide direction="left" in={isExpanded} mountOnEnter unmountOnExit>
+							<Text>{`Tác giả: ${author}`}</Text>
+						</Slide>
+						<Slide
+							direction="left"
+							in={isExpanded}
+							mountOnEnter
+							unmountOnExit
+							{...(isExpanded ? { timeout: 500 } : {})}
+						>
+							<Text>{`Thể loại: ${category}`}</Text>
+						</Slide>
+						<Slide
+							direction="left"
+							in={isExpanded}
+							mountOnEnter
+							unmountOnExit
+							{...(isExpanded ? { timeout: 1000 } : {})}
+						>
+							<Text>{`Tình trạng: ${status}`}</Text>
+						</Slide>
+						<Slide
+							direction="left"
+							in={isExpanded}
+							mountOnEnter
+							unmountOnExit
+							{...(isExpanded ? { timeout: 1500 } : {})}
+						>
+							<Text>{`Mới nhất: ${latest}`}</Text>
+						</Slide>
 					</GridCol>
 					<GridRow className={classes.scrollingText} item xs={10}>
 						<Typography className={classes.title} noWrap>
@@ -190,8 +252,24 @@ function Player() {
 				</Grid>
 			) : (
 				<Grid container justify="center">
-					<Grid className={classes.scrollingText} item xs={5}>
-						<Typography>{`${title} - ${chapter}`}</Typography>
+					<GridRow item xs={12} content="center">
+						<Animated size={48}>
+							<Icon
+								fontSize="inherit"
+								onMouseUp={e => handleExpand(e, true)}
+								component={ExpandLessRounded}
+							/>
+						</Animated>
+					</GridRow>
+					<Grid
+						style={{ height: 40 }}
+						className={classes.scrollingText}
+						item
+						xs={5}
+					>
+						<Typography
+							style={{ lineHeight: 3 }}
+						>{`${title} - ${chapter}`}</Typography>
 					</Grid>
 				</Grid>
 			)}

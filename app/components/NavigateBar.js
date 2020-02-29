@@ -46,6 +46,9 @@ const useStyles = makeStyles(() => ({
 	},
 	circle: {
 		color: '#00997C'
+	},
+	margin: {
+		margin: '0 6px'
 	}
 }));
 
@@ -89,8 +92,8 @@ function NavigateBar() {
 
 	return (
 		<Grid container justify="center" alignItems="center">
-			<GridItem item xs={1} />
-			<GridItem item xs={8}>
+			<Grid className={classes.margin} item xs={1} />
+			<Grid className={classes.margin} item xs={8}>
 				<Bar
 					fullWidth
 					placeholder="pham-nhan-tu-tien"
@@ -99,8 +102,8 @@ function NavigateBar() {
 					disabled={loading}
 					onKeyPress={e => e.key === 'Enter' && handleNavigate(e)}
 				/>
-			</GridItem>
-			<GridItem item xs={1}>
+			</Grid>
+			<Grid className={classes.margin} item xs={1}>
 				{loading ? (
 					<CircularProgress className={classes.circle} />
 				) : (
@@ -112,13 +115,9 @@ function NavigateBar() {
 						<SendOutlined className={classes.icon} />
 					</IconButton>
 				)}
-			</GridItem>
+			</Grid>
 		</Grid>
 	);
 }
-
-const GridItem = styled(Grid)`
-	margin: 0 3px;
-`;
 
 export default NavigateBar;
